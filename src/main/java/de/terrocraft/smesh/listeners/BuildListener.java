@@ -1,6 +1,5 @@
 package de.terrocraft.smesh.listeners;
 
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
@@ -23,8 +22,8 @@ public class BuildListener implements Listener {
         Player p = event.getPlayer();
         if (MachMakeManager.BypassPlayers.contains(p)) return;
         if (!p.hasPermission("Build")) {
-                event.setCancelled(true);
-                p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
+            event.setCancelled(true);
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
         }
     }
 
@@ -33,8 +32,8 @@ public class BuildListener implements Listener {
         Player p = event.getPlayer();
         if (MachMakeManager.BypassPlayers.contains(p)) return;
         if (!p.hasPermission("Build")) {
-                event.setCancelled(true);
-                p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
+            event.setCancelled(true);
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
         }
     }
 }

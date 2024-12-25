@@ -5,7 +5,6 @@ import de.terrocraft.smesh.Smash;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Random;
 
 
@@ -14,30 +13,6 @@ public class PlayerManager {
 
     public PlayerManager(Smash main) {
         this.main = main;
-    }
-
-    public void handle(Player player) {
-        if (main.getGamestate() == Gamestates.LOBBY) {
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
-            main.alive.remove(player);
-            main.spectating.remove(player);
-            main.alive.add(player);
-            player.setExp(0);
-            player.setTotalExperience(0);
-            player.setMaxHealth(20);
-            player.setHealth(20);
-            player.setFoodLevel(20);
-            player.setGameMode(GameMode.ADVENTURE);
-            player.setAllowFlight(false);
-            player.sendMessage(new ChatManager(main).prefix + "Welcome to the MiniGame!");
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined the minigame.");
-        } else if (main.getGamestate() == Gamestates.INGAME || main.getGamestate() == Gamestates.ENDGAME || main.getGamestate() == Gamestates.PREGAME) {
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
-            main.alive.remove(player);
-            main.spectating.remove(player);
-            main.spectating.add(player);
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined as a spectator.");
-        }
     }
 
     public static void teleportToRandomBlock(Player player, Location center, int radius) {
@@ -85,6 +60,30 @@ public class PlayerManager {
         Material blockAbove = world.getBlockAt(location.clone().add(0, 1, 0)).getType();
 
         return targetBlock == Material.AIR && blockAbove == Material.AIR;
+    }
+
+    public void handle(Player player) {
+        if (main.getGamestate() == Gamestates.LOBBY) {
+            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            main.alive.remove(player);
+            main.spectating.remove(player);
+            main.alive.add(player);
+            player.setExp(0);
+            player.setTotalExperience(0);
+            player.setMaxHealth(20);
+            player.setHealth(20);
+            player.setFoodLevel(20);
+            player.setGameMode(GameMode.ADVENTURE);
+            player.setAllowFlight(false);
+            player.sendMessage(new ChatManager(main).prefix + "Welcome to the MiniGame!");
+            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined the minigame.");
+        } else if (main.getGamestate() == Gamestates.INGAME || main.getGamestate() == Gamestates.ENDGAME || main.getGamestate() == Gamestates.PREGAME) {
+            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            main.alive.remove(player);
+            main.spectating.remove(player);
+            main.spectating.add(player);
+            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined as a spectator.");
+        }
     }
 
 }

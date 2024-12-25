@@ -3,8 +3,6 @@ package de.terrocraft.smesh.commands;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
-import net.momirealms.customnameplates.api.placeholder.PlaceholderCounter;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,8 +11,8 @@ import org.bukkit.entity.Player;
 
 public class BypassCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender,Command cmd,String s,String[] strings) {
-        if (!(sender instanceof Player)){
+    public boolean onCommand(CommandSender sender, Command cmd, String s, String[] strings) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage(new ChatManager(Smash.getInstance()).noplayer);
             return true;
         }

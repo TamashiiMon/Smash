@@ -50,14 +50,12 @@ public class DamageListener implements Listener {
         double currentKnockback = KnockbackPercentage.getOrDefault(player, 0.0);
 
 
-
         if (damage < 3) {
             KnockbackPercentage.put(player, currentKnockback + 1.5);
         } else {
             KnockbackPercentage.put(player, currentKnockback + 3.5);
         }
     }
-
 
 
     @EventHandler

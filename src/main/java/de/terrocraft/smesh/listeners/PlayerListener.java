@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        if (p.getUniqueId().equals("bd6e02a7a569464585526349639aa799")){
+        if (p.getUniqueId().equals("bd6e02a7a569464585526349639aa799")) {
             event.setJoinMessage(new ChatManager(smash).prefix + new ChatManager(smash).format("&4!Achtung! Ein Controller (Arien) ist ge joint, bringt euch in sicherheit!"));
             new PlayerManager(smash).handle(p);
             return;
@@ -39,7 +39,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player p = event.getPlayer();
-        if (Smash.getInstance().getGamestate().equals(Gamestates.INGAME)){
+        if (Smash.getInstance().getGamestate().equals(Gamestates.INGAME)) {
             MachMakeManager.PlayersInRound.remove(p);
             MachMakeManager.PlayerDeaths.remove(p);
             Bukkit.broadcastMessage(new ChatManager(smash).prefix + new ChatManager(smash).format("&4&lDer spieler &6" + p.getName() + " &ahat den server verlassen und ist somit raus!"));
