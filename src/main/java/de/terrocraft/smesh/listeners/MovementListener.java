@@ -4,11 +4,11 @@ import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.managers.MachMakeManager;
 import de.terrocraft.smesh.managers.PlayerManager;
+import de.terrocraft.smesh.managers.WorldManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -40,22 +40,32 @@ public class MovementListener implements Listener {
         Player player = event.getPlayer();
         if (MachMakeManager.BypassPlayers.contains(player)) return;
 
-        Location lobbyloc = Smash.config.getLocation("lobby-location");
+        if (Smash.getInstance().getGamestate() == Gamestates.PREGAME) {
+            if (event.getFrom().getX() != event.getTo().getX() ||
+                    event.getFrom().getY() != event.getTo().getY() ||
+                    event.getFrom().getZ() != event.getTo().getZ()) {
+
+                event.setTo(event.getFrom());
+            }
+            return;
+        }
+
+        Location lobbyloc = new Location(Bukkit.getWorld("world"), 0, 101, 0);
 
         if (player.getLocation().getBlockY() < 70) {
-            World world = Bukkit.getWorld("world");
-            if (world == null) {
-                Bukkit.getLogger().severe("World 'world' not found!");
-                return;
-            }
+            World world = Bukkit.getWorld(WorldManager.smashWorldName);
             if (lobbyloc == null) {
                 Bukkit.getLogger().severe("Ingame or lobby location is not set in the configuration.");
                 return;
             }
-            Location loc = new Location(world, 109, 117, -376);
+            Location loc = new Location(world, 0, 85, 0);
             if (Smash.getInstance().getGamestate() == Gamestates.INGAME) {
                 if (MachMakeManager.PlayersInRound.contains(player)) {
 
+                    if (world == null) {
+                        Bukkit.getLogger().severe("World 'world' not found!");
+                        return;
+                    }
                     PlayerManager.teleportToRandomBlock(player, loc, 25);
 
                     player.sendMessage("Du bist runter gefallen!");
@@ -73,7 +83,11 @@ public class MovementListener implements Listener {
                     player.teleport(loc);
                     MachMakeManager.PlayerDeaths.remove(player);
                 }
-            } else {
+            } else if (Smash.getInstance().getGamestate() == Gamestates.LOBBY || Smash.getInstance().getGamestate() == Gamestates.PREGAME || Smash.getInstance().getGamestate() == Gamestates.ENDGAME) {
+                player.teleport(lobbyloc);
+            }
+
+            if (Smash.getInstance().getGamestate() == Gamestates.LOBBY) {
                 player.teleport(lobbyloc);
             }
 

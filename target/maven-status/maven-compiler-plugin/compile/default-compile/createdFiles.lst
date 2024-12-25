@@ -2,6 +2,7 @@ de/terrocraft/smesh/Gamestates.class
 de/terrocraft/smesh/listeners/TNTListener.class
 de/terrocraft/smesh/commands/StartCommand.class
 de/terrocraft/smesh/countdowns/PreGameTimer.class
+de/terrocraft/smesh/managers/WorldManager.class
 de/terrocraft/smesh/countdowns/PreGameTimer$1.class
 de/terrocraft/smesh/Utils/PlayerActionBar.class
 de/terrocraft/smesh/managers/PlayerManager.class
@@ -10,7 +11,9 @@ de/terrocraft/smesh/commands/BypassCommand.class
 de/terrocraft/smesh/managers/ChatManager.class
 de/terrocraft/smesh/Utils/ConfigUtil.class
 de/terrocraft/smesh/Smash.class
+de/terrocraft/smesh/commands/EditModeCommand.class
 de/terrocraft/smesh/listeners/DamageListener.class
+de/terrocraft/smesh/managers/WorldManager$1.class
 de/terrocraft/smesh/commands/SmashStopCommand.class
 de/terrocraft/smesh/managers/MachMakeManager.class
 de/terrocraft/smesh/listeners/MovementListener.class

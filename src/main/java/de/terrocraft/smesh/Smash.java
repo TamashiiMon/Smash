@@ -4,12 +4,12 @@ import de.terrocraft.smesh.Utils.ConfigUtil;
 import de.terrocraft.smesh.Utils.PlayerActionBar;
 import de.terrocraft.smesh.Utils.SConfig;
 import de.terrocraft.smesh.commands.BypassCommand;
-import de.terrocraft.smesh.commands.StartCommand;
 import de.terrocraft.smesh.commands.SmashStopCommand;
+import de.terrocraft.smesh.commands.StartCommand;
 import de.terrocraft.smesh.listeners.*;
 import de.terrocraft.smesh.managers.MachMakeManager;
+import de.terrocraft.smesh.managers.WorldManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +39,8 @@ public final class Smash extends JavaPlugin {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 MachMakeManager.EndGameEvent(onlinePlayer);
             }
+            WorldManager worldManager = new WorldManager(getDataFolder());
+            worldManager.deleteWorld();
         }
     }
 
@@ -46,21 +48,19 @@ public final class Smash extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        config = ConfigUtil.getConfig("config");
+        setGamestate(Gamestates.LOBBY);
 
-        Location defaultlobbyloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        config = ConfigUtil.getConfig("config");
 
         if (!config.getFile().isFile()) {
             config.setDefault("prefix", "&5&lSmash&7:&r ");
             config.setDefault("noperm", "&cYou do not have permission to access this command.");
-            config.setDefault("lobby-location", defaultlobbyloc);
             config.save();
         }
 
         PlayerActionBar.start();
         registerCommands();
         registerEvents();
-        setGamestate(Gamestates.LOBBY);
 
 
     }

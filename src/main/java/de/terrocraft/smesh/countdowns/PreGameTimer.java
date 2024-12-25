@@ -5,6 +5,7 @@ import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.listeners.DamageListener;
 import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
+import de.terrocraft.smesh.managers.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,13 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PreGameTimer {
 
     private Smash smash;
+    private String worldName;
 
-    public PreGameTimer(Smash main) {
+    public PreGameTimer(Smash main, String worldName) {
         this.smash = main;
+        this.worldName = worldName;
     }
 
     public void startCountdown() {
-        Smash.getInstance().setGamestate(Gamestates.PREGAME);
+        WorldManager worldManager = new WorldManager(Smash.getInstance().getDataFolder());
+        worldManager.loadMap(worldName);
         new BukkitRunnable() {
 
             int number = 10;
@@ -31,6 +35,11 @@ public class PreGameTimer {
                     }
                     if (number == 5) {
                         Bukkit.broadcastMessage(new ChatManager(smash).prefix + "§aGame starting in 5 seconds.");
+                        Smash.getInstance().setGamestate(Gamestates.PREGAME);
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (MachMakeManager.BypassPlayers.contains(player)) return;
+                            MachMakeManager.GameStartEvent(player);
+                        }
                     }
                     if (number == 4) {
                         Bukkit.broadcastMessage(new ChatManager(smash).prefix + "§aGame starting in 4 seconds.");
@@ -49,11 +58,6 @@ public class PreGameTimer {
                     Bukkit.broadcastMessage(new ChatManager(smash).prefix + "§a§lThe game has now started!");
                     DamageListener.KnockbackPercentage.clear();
                     smash.setGamestate(Gamestates.INGAME);
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (MachMakeManager.BypassPlayers.contains(player)) return;
-                        MachMakeManager.GameStartEvent(player);
-                    }
                     cancel();
                 }
             }

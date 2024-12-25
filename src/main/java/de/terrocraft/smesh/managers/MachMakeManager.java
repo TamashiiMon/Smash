@@ -3,25 +3,22 @@ package de.terrocraft.smesh.managers;
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.listeners.DamageListener;
-import jdk.javadoc.internal.doclets.toolkit.taglets.IndexTaglet;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import sun.jvm.hotspot.utilities.IntArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MachMakeManager {
     public static HashMap<Player, Integer> PlayerDeaths = new HashMap<>();
 
     public static int Lives = 3;
 
-    public static List<Player> PlayersInRound  = new ArrayList<>();
+    public static List<Player> PlayersInRound = new ArrayList<>();
 
     public static List<Player> BypassPlayers = new ArrayList<>();
 
@@ -35,7 +32,7 @@ public class MachMakeManager {
 
             Smash.getInstance().setGamestate(Gamestates.LOBBY);
 
-            Location loc = Smash.config.getLocation("lobby-location");
+            Location loc = new Location(Bukkit.getWorld("world"), 0, 101, 0);
             player.teleport(loc);
 
             player.setGameMode(GameMode.ADVENTURE);
@@ -64,7 +61,7 @@ public class MachMakeManager {
 
     public static void GameStartEvent(Player player) {
 
-        Location loc = new Location(Bukkit.getWorld("world"), 109, 107, -376);
+        Location loc = new Location(Bukkit.getWorld(WorldManager.smashWorldName), 0, 85, 0);
 
         if (MachMakeManager.BypassPlayers.contains(player)) return;
 
@@ -74,6 +71,7 @@ public class MachMakeManager {
         player.setMaxHealth(MachMakeManager.Lives * 2);
         player.setHealth(MachMakeManager.Lives * 2);
         player.setFoodLevel(6);
+        player.setAllowFlight(true);
         MachMakeManager.PlayerDeaths.put(player, 0);
         PlayersInRound.add(player);
     }
@@ -109,9 +107,9 @@ public class MachMakeManager {
                 DamageListener.KnockbackPercentage.remove(player);
             }
 
-            World world = Bukkit.getWorld("world");
+            World world = Bukkit.getWorld(WorldManager.smashWorldName);
             if (world != null) {
-                Location loc = new Location(world, 109, 107, -376);
+                Location loc = new Location(world, 0, 0, 0);
                 player.teleport(loc);
             } else {
                 Bukkit.getLogger().severe("World 'world' not found for teleportation!");
@@ -123,12 +121,12 @@ public class MachMakeManager {
     }
 
 
-
     public static void MachMakeUpdateEvent() {
         if (PlayersInRound.size() == 1) {
             Player winner = PlayersInRound.get(0);
 
             Smash.getInstance().setGamestate(Gamestates.ENDGAME);
+
 
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 EndGameEvent(onlinePlayer);

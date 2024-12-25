@@ -3,7 +3,6 @@ package de.terrocraft.smesh.Utils;
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.listeners.DamageListener;
-import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -61,21 +60,21 @@ public class PlayerActionBar {
             knockbackPercentage = DamageListener.KnockbackPercentage.get(player);
         }
 
-            String color;
-            if (knockbackPercentage > 150) {
-                color = "§4";
-            } else if (knockbackPercentage > 100) {
-                color = "§c";
-            } else if (knockbackPercentage > 50) {
-                color = "§e";
-            } else {
-                color = "§a";
-            }
+        String color;
+        if (knockbackPercentage > 150) {
+            color = "§4";
+        } else if (knockbackPercentage > 100) {
+            color = "§c";
+        } else if (knockbackPercentage > 50) {
+            color = "§e";
+        } else {
+            color = "§a";
+        }
 
-            String knockbackMessage = color + knockbackPercentage + "%";
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(knockbackMessage));
+        String knockbackMessage = color + knockbackPercentage + "%";
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(knockbackMessage));
 
-            updatePlayerNametag(player, knockbackPercentage, color);
+        updatePlayerNametag(player, knockbackPercentage, color);
     }
 
     private static void updatePlayerNametag(Player player, double knockbackPercentage, String color) {

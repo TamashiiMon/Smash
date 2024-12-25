@@ -12,6 +12,8 @@
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/managers/MachMakeManager.java
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/Utils/PlayerActionBar.java
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/countdowns/PreGameTimer.java
+/home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/managers/WorldManager.java
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/commands/StartCommand.java
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/Utils/SConfig.java
+/home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/commands/EditModeCommand.java
 /home/gianni/IdeaProjects/Smesh/src/main/java/de/terrocraft/smesh/Utils/ConfigUtil.java
