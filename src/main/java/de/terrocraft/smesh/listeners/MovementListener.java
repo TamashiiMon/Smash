@@ -2,16 +2,19 @@ package de.terrocraft.smesh.listeners;
 
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
 import de.terrocraft.smesh.managers.PlayerManager;
 import de.terrocraft.smesh.managers.WorldManager;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -27,6 +30,8 @@ public class MovementListener implements Listener {
     private double horizontalJumpPower = 1;
     private double fallSpeedMultiplier = 2.5;
     private long cooldownTime = 2000;
+
+    private final Set<Player> smashedPlayers = new HashSet<>();
 
     @EventHandler
     public void setFly(PlayerJoinEvent e) {
@@ -50,7 +55,7 @@ public class MovementListener implements Listener {
             return;
         }
 
-        Location lobbyloc = new Location(Bukkit.getWorld("world"), 0, 101, 0);
+        Location lobbyloc = new Location(Bukkit.getWorld("world"), 0.5, 101, 0.5);
 
         if (player.getLocation().getBlockY() < 70) {
             World world = Bukkit.getWorld(WorldManager.smashWorldName);
@@ -58,6 +63,7 @@ public class MovementListener implements Listener {
                 Bukkit.getLogger().severe("Ingame or lobby location is not set in the configuration.");
                 return;
             }
+            smashedPlayers.remove(player);
             Location loc = new Location(world, 0, 85, 0);
             if (Smash.getInstance().getGamestate() == Gamestates.INGAME) {
                 if (MachMakeManager.PlayersInRound.contains(player)) {
@@ -68,7 +74,7 @@ public class MovementListener implements Listener {
                     }
                     PlayerManager.teleportToRandomBlock(player, loc, 25);
 
-                    player.sendMessage("Du bist runter gefallen!");
+                    player.sendMessage(ChatManager.hex("#df3f2dDu bist runter gefallen!"));
 
                     MachMakeManager.PlayerDeaths.put(player, MachMakeManager.PlayerDeaths.getOrDefault(player, 0) + 1);
 
@@ -116,12 +122,67 @@ public class MovementListener implements Listener {
                 newVelocity.setX(previousVelocity.getX() * 0.5);
                 newVelocity.setZ(previousVelocity.getZ() * 0.5);
                 player.setVelocity(newVelocity);
+
+                smashedPlayers.add(player);
             }
+        }
+
+        if (smashedPlayers.contains(player) && player.isOnGround()) {
+            Location location = player.getLocation();
+            World world = player.getWorld();
+
+            int radius = 4;
+            int particleCount = 200;
+
+            for (int x = -radius; x <= radius; x++) {
+                for (int z = -radius; z <= radius; z++) {
+                    double distanceFromCenter = Math.sqrt(x * x + z * z);
+
+                    if (distanceFromCenter <= radius) {
+                        Location blockLocation = location.clone().add(x, -1, z);
+                        Block block = world.getBlockAt(blockLocation);
+
+                        if (!block.getType().isAir() && block.getType().isSolid()) {
+                            double randomY = Math.random() * 2 - 1;
+                            double heightVariation = Math.min(1.0, distanceFromCenter / radius);
+
+                            Location particleLocation = blockLocation.clone().add(0.5, 1.0 + randomY + heightVariation, 0.5);
+
+                            world.spawnParticle(Particle.BLOCK, particleLocation, 10, 0.3, 0.3, 0.3, block.getBlockData());
+                        }
+                    }
+                }
+            }
+
+
+
+
+
+            // Sound: Explosion
+            world.playSound(location, Sound.ENTITY_BREEZE_SHOOT, 0.25f, 1f);
+
+            // Spieler im Radius von 2 Blöcken leichten Knockback geben
+            double knockbackStrength = 1.3; // Stärke des Knockbacks
+            double knockbackRadius = 3; // Radius in Blöcken
+            for (Player nearbyPlayer : world.getPlayers()) {
+                if (nearbyPlayer.equals(player)) continue; // Den Spieler selbst ignorieren
+                if (nearbyPlayer.getLocation().distance(location) <= knockbackRadius) {
+                    // Knockback in Richtung weg vom Zentrum
+                    Vector knockback = nearbyPlayer.getLocation().toVector().subtract(location.toVector()).normalize();
+                    knockback.multiply(knockbackStrength);
+                    nearbyPlayer.setVelocity(knockback);
+                }
+            }
+
+            // Spieler aus der "smashedPlayers"-Liste entfernen
+            smashedPlayers.remove(player);
         }
     }
 
 
-    @EventHandler
+
+
+        @EventHandler
     public void setVelocity(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
         if (MachMakeManager.BypassPlayers.contains(player)) return;

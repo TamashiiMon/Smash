@@ -19,4 +19,5 @@ de/terrocraft/smesh/managers/MachMakeManager.class
 de/terrocraft/smesh/listeners/MovementListener.class
 de/terrocraft/smesh/Utils/PlayerActionBar$1.class
 de/terrocraft/smesh/listeners/BuildListener.class
+de/terrocraft/smesh/managers/ItemSpawnerManager.class
 de/terrocraft/smesh/Utils/SConfig.class

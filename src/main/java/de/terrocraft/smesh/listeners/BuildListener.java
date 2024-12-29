@@ -1,5 +1,7 @@
 package de.terrocraft.smesh.listeners;
 
+import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
+import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
@@ -20,20 +22,36 @@ public class BuildListener implements Listener {
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         Player p = event.getPlayer();
-        if (MachMakeManager.BypassPlayers.contains(p)) return;
         if (!p.hasPermission("Build")) {
             event.setCancelled(true);
-            p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot break!");
+        }
+    }
+
+    @EventHandler
+    public void onNexoFurnitureBreak(NexoFurnitureBreakEvent event) {
+        Player p = event.getPlayer();
+        if (!p.hasPermission("Build")) {
+            event.setCancelled(true);
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot break!");
+        }
+    }
+
+    @EventHandler
+    public void onNexoBreak(NexoBlockBreakEvent event) {
+        Player p = event.getPlayer();
+        if (!p.hasPermission("Build")) {
+            event.setCancelled(true);
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot break!");
         }
     }
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
         Player p = event.getPlayer();
-        if (MachMakeManager.BypassPlayers.contains(p)) return;
         if (!p.hasPermission("Build")) {
             event.setCancelled(true);
-            p.sendMessage(new ChatManager(smash).prefix + "You cannot build before the game!");
+            p.sendMessage(new ChatManager(smash).prefix + "You cannot build!");
         }
     }
 }

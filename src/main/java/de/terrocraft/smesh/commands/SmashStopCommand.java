@@ -18,7 +18,7 @@ public class SmashStopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender Sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         if (smash.getGamestate().equals(Gamestates.LOBBY) || smash.getGamestate().equals(Gamestates.ENDGAME)) {
-            Sender.sendMessage(new ChatManager(smash).prefix + "&4Das spiel leuft nicht oder wird gerade schon beended.");
+            Sender.sendMessage(new ChatManager(smash).prefix + ChatManager.hex("#df3f2dDas spiel leuft nicht oder wird gerade schon beended."));
             return true;
         }
         smash.setGamestate(Gamestates.ENDGAME);

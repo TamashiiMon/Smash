@@ -2,16 +2,15 @@ package de.terrocraft.smesh.managers;
 
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.countdowns.PreGameTimer;
 import de.terrocraft.smesh.listeners.DamageListener;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class MachMakeManager {
     public static HashMap<Player, Integer> PlayerDeaths = new HashMap<>();
@@ -90,7 +89,7 @@ public class MachMakeManager {
 
             player.setGameMode(GameMode.SPECTATOR);
 
-            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + player.getName() + " is dead.");
+            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + ChatManager.hex("#e06153" + player.getName() + " #df3f2dis dead."));
 
             if (PlayerDeaths.containsKey(player)) {
                 PlayerDeaths.remove(player);
@@ -127,15 +126,54 @@ public class MachMakeManager {
 
             Smash.getInstance().setGamestate(Gamestates.ENDGAME);
 
-
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 EndGameEvent(onlinePlayer);
             }
 
-            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + new ChatManager(Smash.getInstance()).format("&a&lDer Spieler &6" + winner.getName() + " hat gewonnen!"));
+            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + ChatManager.hex("#df3f2Der Spieler #e06153" + winner.getName() + " #df3f2hat gewonnen!"));
         }
 
-
     }
+
+    private static boolean AutostartEnabled = Smash.config.getBoolean("AutoGameStart");
+    private static int minplayersforautostart = Smash.config.getInt("AutoGameStartMinPlayers");
+    private static WorldManager worldManager = new WorldManager(Smash.getInstance().getDataFolder());
+
+    public static void triggerautostartcheck() {
+        // Prüfen, ob der Autostart aktiviert ist
+        if (!AutostartEnabled) {
+            System.out.println("Autostart ist deaktiviert.");
+            return;
+        }
+
+        // Prüfen, ob die Mindestspieleranzahl erreicht ist
+        int onlinePlayers = Bukkit.getOnlinePlayers().size();
+        if (onlinePlayers < minplayersforautostart) {
+            System.out.println("Nicht genügend Spieler online. Erforderlich: " + minplayersforautostart + ", Aktuell: " + onlinePlayers);
+            return;
+        }
+
+        // Kartenliste abrufen
+        List<String> mapNames = worldManager.getMapNames();
+        if (mapNames.isEmpty()) {
+            return;
+        }
+
+        Random rand = new Random();
+        String randomMapName = mapNames.get(rand.nextInt(mapNames.size()));
+
+        if (!worldManager.doesMapExist(randomMapName)) {
+            System.out.println("Karte existiert nicht: " + randomMapName);
+            return;
+        }
+
+        Gamestates currentState = Smash.getInstance().getGamestate();
+        if (currentState.equals(Gamestates.INGAME) || currentState.equals(Gamestates.PREGAME) || currentState.equals(Gamestates.ENDGAME) || currentState.equals(Gamestates.Countdown)) {
+            return;
+        }
+
+        new PreGameTimer(Smash.getInstance(), randomMapName).startCountdown();
+    }
+
 
 }

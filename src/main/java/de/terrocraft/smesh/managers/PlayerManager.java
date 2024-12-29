@@ -40,7 +40,6 @@ public class PlayerManager {
 
                 if (canTeleportToLocation(targetLocation)) {
                     player.teleport(targetLocation);
-                    Bukkit.getLogger().info("Spieler " + player.getName() + " wurde erfolgreich zu einer zufälligen Position teleportiert.");
                     return;
                 }
             }
@@ -74,15 +73,14 @@ public class PlayerManager {
             player.setHealth(20);
             player.setFoodLevel(20);
             player.setGameMode(GameMode.ADVENTURE);
-            player.setAllowFlight(false);
-            player.sendMessage(new ChatManager(main).prefix + "Welcome to the MiniGame!");
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined the minigame.");
+            player.setAllowFlight(true);
+            player.sendMessage(new ChatManager(main).prefix + ChatManager.hex("#df3f2Welcome to the MiniGame!"));
+            Bukkit.broadcastMessage(new ChatManager(main).prefix + ChatManager.hex("#e06153" + player.getDisplayName() + " #df3f2has joined the minigame."));
         } else if (main.getGamestate() == Gamestates.INGAME || main.getGamestate() == Gamestates.ENDGAME || main.getGamestate() == Gamestates.PREGAME) {
             if (MachMakeManager.BypassPlayers.contains(player)) return;
             main.alive.remove(player);
             main.spectating.remove(player);
             main.spectating.add(player);
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + player.getDisplayName() + " has joined as a spectator.");
         }
     }
 

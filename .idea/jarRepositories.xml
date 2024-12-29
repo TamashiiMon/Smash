@@ -12,6 +12,11 @@
       <option name="url" value="https://oss.sonatype.org/content/groups/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="nexomc-repo" />
+      <option name="name" value="nexomc-repo" />
+      <option name="url" value="https://repo.nexomc.com/releases" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="placeholderapi-repo" />
       <option name="name" value="placeholderapi-repo" />
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />

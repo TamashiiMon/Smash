@@ -7,6 +7,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
@@ -57,12 +60,15 @@ public class TNTListener implements Listener {
                             // Verhindere den Standard-Explosionsschaden, indem du ihn auf 0 setzt
                             livingEntity.setNoDamageTicks(0); // Damit wird sofortiger Schaden möglich, wenn der Standard-Schaden ignoriert wird.
                             livingEntity.damage(damage); // Benutzerdefinierten Schaden anwenden
-
-                            Smash.getInstance().getServer().getLogger().info("Damage applied to: " + livingEntity.getName() + " = " + damage);
                         }
                     }
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onBlockDrop(BlockDropItemEvent event) {
+        event.setCancelled(true);
     }
 }

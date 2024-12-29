@@ -13,13 +13,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 
 
 public final class Smash extends JavaPlugin {
-    public static SConfig config;
     private static Smash instance;
+    public static SConfig config;
     public ArrayList<Player> alive = new ArrayList<>();
     public ArrayList<Player> spectating = new ArrayList<>();
     public ArrayList<Player> vanished = new ArrayList<>();
@@ -44,19 +45,20 @@ public final class Smash extends JavaPlugin {
         }
     }
 
+
     @Override
     public void onEnable() {
         instance = this;
 
-        setGamestate(Gamestates.LOBBY);
-
         config = ConfigUtil.getConfig("config");
 
-        if (!config.getFile().isFile()) {
-            config.setDefault("prefix", "&5&lSmash&7:&r ");
-            config.setDefault("noperm", "&cYou do not have permission to access this command.");
+        if (!config.getFile().isFile() && !config.getFile().exists()) {
+            config.setDefault("AutoGameStart", true);
+            config.setDefault("AutoGameStartMinPlayers", 4);
             config.save();
         }
+
+        setGamestate(Gamestates.LOBBY);
 
         PlayerActionBar.start();
         registerCommands();
@@ -67,6 +69,8 @@ public final class Smash extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        WorldManager worldManager = new WorldManager(getDataFolder());
+        worldManager.deleteWorld();
 
     }
 

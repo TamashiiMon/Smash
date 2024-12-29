@@ -127,6 +127,10 @@ public class WorldManager {
             return false;
         }
 
+        if (isuidExist(mapName)) {
+            deleteuid(mapName);
+        }
+
         World world = Bukkit.createWorld(new WorldCreator(smashWorldName).generator("VoidGen"));
         if (world == null) {
             Bukkit.getLogger().severe("Fehler beim Laden der Welt '" + smashWorldName + "'.");
@@ -134,6 +138,10 @@ public class WorldManager {
         }
 
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
+        world.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, false);
         world.setGameRule(GameRule.DO_FIRE_TICK, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         return true;
@@ -142,6 +150,12 @@ public class WorldManager {
     public boolean doesMapExist(String mapName) {
         File mapFolder = new File(worldsFolder, mapName);
         return mapFolder.exists() && mapFolder.isDirectory();
+    }
+
+    public boolean isuidExist(String mapName) {
+        File mapFolder = new File(worldsFolder, mapName);
+        File uid = new File(mapFolder, "uid.dat" );
+        return  uid.isFile() && uid.exists();
     }
 
     public List<String> getMapNames() {
@@ -176,6 +190,18 @@ public class WorldManager {
             return true;
         } catch (IOException e) {
             Bukkit.getLogger().severe("Fehler beim Löschen der Welt: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteuid(String mapName) {
+        File mapFolder = new File(worldsFolder, mapName);
+        File uid = new File(mapFolder, "uid.dat" );
+
+        try {
+            deleteFolder(uid);
+            return true;
+        } catch (IOException e) {
             return false;
         }
     }

@@ -28,12 +28,12 @@ public class BypassCommand implements CommandExecutor {
             MachMakeManager.BypassPlayers.remove(player);
             player.setGameMode(GameMode.SURVIVAL);
             player.setAllowFlight(true);
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "§6Du bist nun aus den Bypass modus.");
+            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "#df3f2dDu bist nun aus den Bypass modus.");
         } else {
             MachMakeManager.BypassPlayers.add(player);
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlight(true);
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "§6Du bist nun im Bypass modus.");
+            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "#df3f2dDu bist nun im Bypass modus.");
             MachMakeManager.EndGameEvent(player);
         }
 
