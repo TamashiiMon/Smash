@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class ChatManager {
 
-    public String prefix = format("\uE000 ");
+    public String prefix = format(Smash.config.getString("prefix"));
     public String permission = format(prefix + hex("#df3f2dDu hast keine rechte um dies zu tuhen!"));
     public String noplayer = format(prefix + hex("#df3f2dYou must be a player to use this command!"));
     private Smash smash;
@@ -24,20 +24,23 @@ public class ChatManager {
     public static String hex(String message) {
         Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
         Matcher matcher = pattern.matcher(message);
+        StringBuffer result = new StringBuffer();
+
         while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
+            String hexCode = matcher.group();
             String replaceSharp = hexCode.replace('#', 'x');
 
-            StringBuilder builder = new StringBuilder("&l");
-            for (char c : replaceSharp.toCharArray()) {
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch) {
                 builder.append("&").append(c);
             }
 
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
+            matcher.appendReplacement(result, builder.toString());
         }
 
-        return ChatColor.translateAlternateColorCodes('&', message);
+        matcher.appendTail(result);
+        return ChatColor.translateAlternateColorCodes('&', result.toString());
     }
 
 }

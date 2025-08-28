@@ -6,7 +6,11 @@ description: Thist is the Smash plugin for the smash server, made with love by t
 website: https://guns.lol/terrocraft
 main: de.terrocraft.smesh.Smash
 api-version: '1.21'
+libraries:
+  - mysql:mysql-connector-java:8.0.33
 commands:
   start:
   smashstop:
   bypass:
+  coins:
+  wins:

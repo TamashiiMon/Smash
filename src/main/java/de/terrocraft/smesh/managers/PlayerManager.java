@@ -35,7 +35,7 @@ public class PlayerManager {
 
             Material blockType = world.getBlockAt(randomX, highestY - 1, randomZ).getType();
 
-            if (blockType.isSolid()) {
+            if (blockType.isSolid() && !blockType.isTransparent() && !blockType.isInteractable()) {
                 Location targetLocation = new Location(world, randomX + 0.5, highestY + 1, randomZ + 0.5);
 
                 if (canTeleportToLocation(targetLocation)) {
@@ -75,7 +75,7 @@ public class PlayerManager {
             player.setGameMode(GameMode.ADVENTURE);
             player.setAllowFlight(true);
             player.sendMessage(new ChatManager(main).prefix + ChatManager.hex("#df3f2Welcome to the MiniGame!"));
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + ChatManager.hex("#e06153" + player.getDisplayName() + " #df3f2has joined the minigame."));
+            Bukkit.broadcastMessage(new ChatManager(main).prefix + ChatManager.hex(" #e06153" + player.getDisplayName() + " #df3f2has joined the minigame."));
         } else if (main.getGamestate() == Gamestates.INGAME || main.getGamestate() == Gamestates.ENDGAME || main.getGamestate() == Gamestates.PREGAME) {
             if (MachMakeManager.BypassPlayers.contains(player)) return;
             main.alive.remove(player);

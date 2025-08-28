@@ -2,6 +2,7 @@ package de.terrocraft.smesh.listeners;
 
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.Utils.CoinManager;
 import de.terrocraft.smesh.Utils.PlayerActionBar;
 import de.terrocraft.smesh.managers.ChatManager;
 import de.terrocraft.smesh.managers.MachMakeManager;
@@ -33,12 +34,18 @@ public class PlayerListener implements Listener {
         event.setJoinMessage(new ChatManager(smash).prefix + ChatManager.hex("#df3f2dEin #e06153" + p.getName() + " #df3f2dist auf dem Server gehüpft!"));
 
 
-        if (event.getPlayer().getUniqueId().toString().equals("bfd59ae0c9054f3b903a3ce8510d6b71")) {
+        if (event.getPlayer().getName().toString().equals("NeonSprout")) {
             p.setDisplayName("Zero_Two");
         }
         FastBoard board = new FastBoard(p);
         board.updateTitle(ChatColor.RED + "Smash");
         PlayerActionBar.boards.put(p.getUniqueId(), board);
+
+        CoinManager.doesPlayerExist(p.getUniqueId()).thenAccept(exists -> {
+            if (!exists) {
+                CoinManager.savePlayerData(p.getUniqueId(), 0, 0);
+            }
+        });
 
         new PlayerManager(smash).handle(p);
     }
@@ -93,10 +100,8 @@ public class PlayerListener implements Listener {
     public void onChatMessage(AsyncPlayerChatEvent event) {
         String message = event.getMessage().toLowerCase();
 
-        // Verhindert, dass die Nachricht sofort im Chat angezeigt wird
         event.setCancelled(true);
 
-        // Nachricht des Spielers sofort senden
         Bukkit.getScheduler().runTask(Smash.getInstance(), () -> {
             if (event.getPlayer().hasPermission("smash.hex.chat")) {
                 Bukkit.broadcastMessage(ChatManager.hex("<" + event.getPlayer().getDisplayName() + ">" + " " + event.getMessage()));
@@ -105,9 +110,11 @@ public class PlayerListener implements Listener {
             }
 
             if (message.contains("darling")) {
-                Bukkit.getScheduler().runTaskLater(Smash.getInstance(), () -> {
-                    Bukkit.broadcastMessage("<Zero_Two> Machst du mir etwa nach?");
-                }, 50);
+                if (!event.getPlayer().getName().toString().equals("NeonSprout")) {
+                    Bukkit.getScheduler().runTaskLater(Smash.getInstance(), () -> {
+                        Bukkit.broadcastMessage("<Zero_Two> Machst du mir etwa nach?");
+                    }, 50);
+                }
             }
         });
     }

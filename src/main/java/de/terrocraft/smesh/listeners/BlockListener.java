@@ -4,18 +4,23 @@ import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import de.terrocraft.smesh.Smash;
 import de.terrocraft.smesh.managers.ChatManager;
-import de.terrocraft.smesh.managers.MachMakeManager;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BuildListener implements Listener {
+public class BlockListener implements Listener {
 
     private Smash smash;
 
-    public BuildListener(Smash main) {
+    public BlockListener(Smash main) {
         this.smash = main;
     }
 
@@ -54,4 +59,5 @@ public class BuildListener implements Listener {
             p.sendMessage(new ChatManager(smash).prefix + "You cannot build!");
         }
     }
+
 }

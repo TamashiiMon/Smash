@@ -50,18 +50,23 @@ public class StartCommand implements CommandExecutor, TabCompleter {
                     String randomMapName =  worldManager.getMapNames().get(rand.nextInt(worldManager.getMapNames().size()));
                     if (!new WorldManager(Smash.getInstance().getDataFolder()).doesMapExist(randomMapName)) {
                         p.sendMessage(ChatColor.DARK_PURPLE + "Fehler! Random world system broken!");
-                        return true;
+                        return false;
+                    }
+                    if (!(Bukkit.getOnlinePlayers().size() > 1)) {
+                        p.sendMessage(new ChatManager(smash).prefix + ChatManager.hex("#df3f2dEs müssen mindestens #e06153§l2 #df3f2dpersonen online sein!"));
+                        return false;
                     }
                     new PreGameTimer(smash, randomMapName).startCountdown();
+                    return true;
                 }
                 if (!new WorldManager(Smash.getInstance().getDataFolder()).doesMapExist(args[0])) {
                     p.sendMessage(ChatColor.DARK_PURPLE + "World '" + args[0] + "' does not exist.");
-                    return true;
+                    return false;
                 }
 
                 if (Smash.getInstance().getGamestate().equals(Gamestates.INGAME) || Smash.getInstance().getGamestate().equals(Gamestates.PREGAME) || Smash.getInstance().getGamestate().equals(Gamestates.ENDGAME) || Smash.getInstance().getGamestate().equals(Gamestates.Countdown)) {
                     p.sendMessage(new ChatManager(smash).prefix + ChatManager.hex("#df3f2dEin spiel ist noch am laufen!"));
-                    return true;
+                    return false;
                 }
                 if (!(Bukkit.getOnlinePlayers().size() > 1)) {
                     p.sendMessage(new ChatManager(smash).prefix + ChatManager.hex("#df3f2dEs müssen mindestens #e061532 #df3f2dpersonen online sein!"));

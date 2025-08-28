@@ -53,13 +53,12 @@ public class TNTListener implements Listener {
 
                             if (distance < 1.0) {
                                 Vector knockback = livingEntity.getLocation().toVector().subtract(tnt.getLocation().toVector()).normalize();
-                                knockback.multiply(0.3);  // Rückstoß stark reduzieren
-                                livingEntity.setVelocity(knockback);  // Knockback anwenden
+                                knockback.multiply(0.3);
+                                livingEntity.setVelocity(knockback);
                             }
 
-                            // Verhindere den Standard-Explosionsschaden, indem du ihn auf 0 setzt
-                            livingEntity.setNoDamageTicks(0); // Damit wird sofortiger Schaden möglich, wenn der Standard-Schaden ignoriert wird.
-                            livingEntity.damage(damage); // Benutzerdefinierten Schaden anwenden
+                            livingEntity.setNoDamageTicks(0);
+                            livingEntity.damage(damage);
                         }
                     }
                 }

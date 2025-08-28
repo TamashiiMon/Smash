@@ -115,6 +115,7 @@ public class MovementListener implements Listener {
         }
 
         if (player.isSneaking() && !player.isOnGround() && jumpedPlayers.contains(player)) {
+            // Setze die Geschwindigkeit wie zuvor
             Vector previousVelocity = lastVelocity.get(player);
             if (previousVelocity != null) {
                 Vector newVelocity = previousVelocity.clone().setY(-fallSpeedMultiplier);
@@ -122,6 +123,22 @@ public class MovementListener implements Listener {
                 newVelocity.setX(previousVelocity.getX() * 0.5);
                 newVelocity.setZ(previousVelocity.getZ() * 0.5);
                 player.setVelocity(newVelocity);
+
+                // Smash-Effekt: Luftstoß um den Spieler
+                Location location = player.getLocation();
+                World world = player.getWorld();
+                int airParticleCount = 30; // Anzahl der Partikel pro Tick
+                double airRadius = 1.5;   // Radius des Effekts
+
+                for (int i = 0; i < airParticleCount; i++) {
+                    double angle = Math.random() * 2 * Math.PI; // Zufälliger Winkel
+                    double xOffset = Math.cos(angle) * airRadius;
+                    double zOffset = Math.sin(angle) * airRadius;
+                    double yOffset = Math.random() * 0.5 - 0.25; // Leichte Höhenvariation
+
+                    Location particleLocation = location.clone().add(xOffset, yOffset, zOffset);
+                    world.spawnParticle(Particle.CLOUD, particleLocation, 0, 0.1, 0.1, 0.1, 0.05);
+                }
 
                 smashedPlayers.add(player);
             }
@@ -131,50 +148,19 @@ public class MovementListener implements Listener {
             Location location = player.getLocation();
             World world = player.getWorld();
 
-            int radius = 4;
-            int particleCount = 200;
-
-            for (int x = -radius; x <= radius; x++) {
-                for (int z = -radius; z <= radius; z++) {
-                    double distanceFromCenter = Math.sqrt(x * x + z * z);
-
-                    if (distanceFromCenter <= radius) {
-                        Location blockLocation = location.clone().add(x, -1, z);
-                        Block block = world.getBlockAt(blockLocation);
-
-                        if (!block.getType().isAir() && block.getType().isSolid()) {
-                            double randomY = Math.random() * 2 - 1;
-                            double heightVariation = Math.min(1.0, distanceFromCenter / radius);
-
-                            Location particleLocation = blockLocation.clone().add(0.5, 1.0 + randomY + heightVariation, 0.5);
-
-                            world.spawnParticle(Particle.BLOCK, particleLocation, 10, 0.3, 0.3, 0.3, block.getBlockData());
-                        }
-                    }
-                }
-            }
-
-
-
-
-
-            // Sound: Explosion
             world.playSound(location, Sound.ENTITY_BREEZE_SHOOT, 0.25f, 1f);
 
-            // Spieler im Radius von 2 Blöcken leichten Knockback geben
-            double knockbackStrength = 1.3; // Stärke des Knockbacks
-            double knockbackRadius = 3; // Radius in Blöcken
+            double knockbackStrength = 1.3;
+            double knockbackRadius = 3;
             for (Player nearbyPlayer : world.getPlayers()) {
-                if (nearbyPlayer.equals(player)) continue; // Den Spieler selbst ignorieren
+                if (nearbyPlayer.equals(player)) continue;
                 if (nearbyPlayer.getLocation().distance(location) <= knockbackRadius) {
-                    // Knockback in Richtung weg vom Zentrum
                     Vector knockback = nearbyPlayer.getLocation().toVector().subtract(location.toVector()).normalize();
                     knockback.multiply(knockbackStrength);
                     nearbyPlayer.setVelocity(knockback);
                 }
             }
 
-            // Spieler aus der "smashedPlayers"-Liste entfernen
             smashedPlayers.remove(player);
         }
     }

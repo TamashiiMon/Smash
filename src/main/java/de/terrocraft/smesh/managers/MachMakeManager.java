@@ -2,6 +2,7 @@ package de.terrocraft.smesh.managers;
 
 import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.Utils.CoinManager;
 import de.terrocraft.smesh.countdowns.PreGameTimer;
 import de.terrocraft.smesh.listeners.DamageListener;
 import org.bukkit.*;
@@ -130,6 +131,9 @@ public class MachMakeManager {
                 EndGameEvent(onlinePlayer);
             }
 
+            CoinManager.addWins(winner.getUniqueId(), 1);
+            CoinManager.addCoins(winner.getUniqueId(), 5);
+
             Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + ChatManager.hex("#df3f2Der Spieler #e06153" + winner.getName() + " #df3f2hat gewonnen!"));
         }
 
@@ -142,14 +146,12 @@ public class MachMakeManager {
     public static void triggerautostartcheck() {
         // Prüfen, ob der Autostart aktiviert ist
         if (!AutostartEnabled) {
-            System.out.println("Autostart ist deaktiviert.");
             return;
         }
 
         // Prüfen, ob die Mindestspieleranzahl erreicht ist
         int onlinePlayers = Bukkit.getOnlinePlayers().size();
         if (onlinePlayers < minplayersforautostart) {
-            System.out.println("Nicht genügend Spieler online. Erforderlich: " + minplayersforautostart + ", Aktuell: " + onlinePlayers);
             return;
         }
 
