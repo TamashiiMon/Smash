@@ -1,18 +1,18 @@
-package de.terrocraft.smesh.managers;
+package de.terrocraft.smesh.services;
 
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.enums.Gamestates;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
 
 
-public class PlayerManager {
+public class PlayerService {
     private static Smash main;
 
-    public PlayerManager(Smash main) {
-        this.main = main;
+    public PlayerService(Smash main) {
+        PlayerService.main = main;
     }
 
     public static void teleportToRandomBlock(Player player, Location center, int radius) {
@@ -21,7 +21,7 @@ public class PlayerManager {
             return;
         }
 
-        if (MachMakeManager.BypassPlayers.contains(player)) return;
+        if (MachMakeService.bypassPlayers.contains(player)) return;
 
         Random random = new Random();
         World world = center.getWorld();
@@ -63,7 +63,7 @@ public class PlayerManager {
 
     public void handle(Player player) {
         if (main.getGamestate() == Gamestates.LOBBY) {
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            if (MachMakeService.bypassPlayers.contains(player)) return;
             main.alive.remove(player);
             main.spectating.remove(player);
             main.alive.add(player);
@@ -74,10 +74,10 @@ public class PlayerManager {
             player.setFoodLevel(20);
             player.setGameMode(GameMode.ADVENTURE);
             player.setAllowFlight(true);
-            player.sendMessage(new ChatManager(main).prefix + ChatManager.hex("#df3f2Welcome to the MiniGame!"));
-            Bukkit.broadcastMessage(new ChatManager(main).prefix + ChatManager.hex(" #e06153" + player.getDisplayName() + " #df3f2has joined the minigame."));
+            player.sendMessage(new ChatService(main).prefix + ChatService.hex("#df3f2Welcome to the MiniGame!"));
+            Bukkit.broadcastMessage(new ChatService(main).prefix + ChatService.hex(" #e06153" + player.getDisplayName() + " #df3f2has joined the minigame."));
         } else if (main.getGamestate() == Gamestates.INGAME || main.getGamestate() == Gamestates.ENDGAME || main.getGamestate() == Gamestates.PREGAME) {
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            if (MachMakeService.bypassPlayers.contains(player)) return;
             main.alive.remove(player);
             main.spectating.remove(player);
             main.spectating.add(player);

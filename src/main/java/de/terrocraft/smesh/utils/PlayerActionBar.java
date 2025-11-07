@@ -1,11 +1,10 @@
-package de.terrocraft.smesh.Utils;
+package de.terrocraft.smesh.utils;
 
-import com.google.common.base.Strings;
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
+import de.terrocraft.smesh.enums.Gamestates;
 import de.terrocraft.smesh.listeners.DamageListener;
-import de.terrocraft.smesh.managers.ChatManager;
-import de.terrocraft.smesh.managers.MachMakeManager;
+import de.terrocraft.smesh.services.ChatService;
+import de.terrocraft.smesh.services.MachMakeService;
 import fr.mrmicky.fastboard.FastBoard;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -33,19 +32,19 @@ public class PlayerActionBar {
             public void run() {
                 if (Smash.getInstance().getGamestate().equals(Gamestates.INGAME)) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (MachMakeManager.BypassPlayers.contains(player)) return;
+                        if (MachMakeService.bypassPlayers.contains(player)) return;
                         sendPercentageToPlayer(player);
                     }
 
-                    MachMakeManager.MachMakeUpdateEvent();
+                    MachMakeService.MachMakeUpdateEvent();
                 }
-                MachMakeManager.triggerautostartcheck();
+                MachMakeService.triggerautostartcheck();
                 if (!DamageListener.KnockbackPercentage.isEmpty()) {
 
                     if (Smash.getInstance().getGamestate() == Gamestates.ENDGAME) {
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (MachMakeManager.BypassPlayers.contains(player)) return;
-                            MachMakeManager.EndGameEvent(player);
+                            if (MachMakeService.bypassPlayers.contains(player)) return;
+                            MachMakeService.EndGameEvent(player);
                         }
                         Smash.getInstance().setGamestate(Gamestates.LOBBY);
                     }
@@ -115,7 +114,7 @@ public class PlayerActionBar {
                 if (player.getHealth() <= 6) {
                     int fullHearts = (int) (player.getHealth() / 2);
                     String hearts = "§c\u2754".repeat(fullHearts);
-                    lines.add(ChatManager.hex("#e06153" + player.getName() + ": " + hearts));
+                    lines.add(ChatService.hex("#e06153" + player.getName() + ": " + hearts));
                 }
 
                 if (!boards.containsKey(player.getUniqueId())) {

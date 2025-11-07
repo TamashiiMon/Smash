@@ -1,20 +1,18 @@
 package de.terrocraft.smesh.listeners;
 
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
-import de.terrocraft.smesh.managers.ChatManager;
-import de.terrocraft.smesh.managers.MachMakeManager;
-import de.terrocraft.smesh.managers.PlayerManager;
-import de.terrocraft.smesh.managers.WorldManager;
+import de.terrocraft.smesh.enums.Gamestates;
+import de.terrocraft.smesh.services.ChatService;
+import de.terrocraft.smesh.services.MachMakeService;
+import de.terrocraft.smesh.services.PlayerService;
+import de.terrocraft.smesh.services.WorldService;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
@@ -26,10 +24,10 @@ public class MovementListener implements Listener {
     public static Set<Player> jumpedPlayers = new HashSet<>();
     public static Map<Player, Long> cooldowns = new HashMap<>();
     public static Map<Player, Vector> lastVelocity = new HashMap<>();
-    private double verticalJumpPower = 1.3;
-    private double horizontalJumpPower = 1;
-    private double fallSpeedMultiplier = 2.5;
-    private long cooldownTime = 2000;
+    private final double verticalJumpPower = 1.3;
+    private final double horizontalJumpPower = 1;
+    private final double fallSpeedMultiplier = 2.5;
+    private final long cooldownTime = 2000;
 
     private final Set<Player> smashedPlayers = new HashSet<>();
 
@@ -43,7 +41,7 @@ public class MovementListener implements Listener {
     @EventHandler
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (MachMakeManager.BypassPlayers.contains(player)) return;
+        if (MachMakeService.bypassPlayers.contains(player)) return;
 
         if (Smash.getInstance().getGamestate() == Gamestates.PREGAME) {
             if (event.getFrom().getX() != event.getTo().getX() ||
@@ -58,7 +56,7 @@ public class MovementListener implements Listener {
         Location lobbyloc = new Location(Bukkit.getWorld("world"), 0.5, 101, 0.5);
 
         if (player.getLocation().getBlockY() < 70) {
-            World world = Bukkit.getWorld(WorldManager.smashWorldName);
+            World world = Bukkit.getWorld(WorldService.smashWorldName);
             if (lobbyloc == null) {
                 Bukkit.getLogger().severe("Ingame or lobby location is not set in the configuration.");
                 return;
@@ -66,28 +64,28 @@ public class MovementListener implements Listener {
             smashedPlayers.remove(player);
             Location loc = new Location(world, 0, 85, 0);
             if (Smash.getInstance().getGamestate() == Gamestates.INGAME) {
-                if (MachMakeManager.PlayersInRound.contains(player)) {
+                if (MachMakeService.playersInRound.contains(player)) {
 
                     if (world == null) {
                         Bukkit.getLogger().severe("World 'world' not found!");
                         return;
                     }
-                    PlayerManager.teleportToRandomBlock(player, loc, 25);
+                    PlayerService.teleportToRandomBlock(player, loc, 25);
 
-                    player.sendMessage(ChatManager.hex("#df3f2dDu bist runter gefallen!"));
+                    player.sendMessage(ChatService.hex("#df3f2dDu bist runter gefallen!"));
 
-                    MachMakeManager.PlayerDeaths.put(player, MachMakeManager.PlayerDeaths.getOrDefault(player, 0) + 1);
+                    MachMakeService.playerDeaths.put(player, MachMakeService.playerDeaths.getOrDefault(player, 0) + 1);
 
-                    int remainingHealth = Math.max(1, MachMakeManager.Lives * 2 - MachMakeManager.PlayerDeaths.get(player) * 2);
+                    int remainingHealth = Math.max(1, MachMakeService.lives * 2 - MachMakeService.playerDeaths.get(player) * 2);
                     player.setMaxHealth(remainingHealth);
                     player.setHealth(remainingHealth);
 
-                    if (MachMakeManager.PlayerDeaths.getOrDefault(player, 0) == MachMakeManager.Lives) {
-                        MachMakeManager.PlayerDeathEvent(player);
+                    if (MachMakeService.playerDeaths.getOrDefault(player, 0) == MachMakeService.lives) {
+                        MachMakeService.PlayerDeathEvent(player);
                     }
                 } else {
                     player.teleport(loc);
-                    MachMakeManager.PlayerDeaths.remove(player);
+                    MachMakeService.playerDeaths.remove(player);
                 }
             } else if (Smash.getInstance().getGamestate() == Gamestates.LOBBY || Smash.getInstance().getGamestate() == Gamestates.PREGAME || Smash.getInstance().getGamestate() == Gamestates.ENDGAME) {
                 player.teleport(lobbyloc);
@@ -166,12 +164,10 @@ public class MovementListener implements Listener {
     }
 
 
-
-
-        @EventHandler
+    @EventHandler
     public void setVelocity(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
-        if (MachMakeManager.BypassPlayers.contains(player)) return;
+        if (MachMakeService.bypassPlayers.contains(player)) return;
 
         if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
             return;

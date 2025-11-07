@@ -1,4 +1,4 @@
-package de.terrocraft.smesh.managers;
+package de.terrocraft.smesh.services;
 
 import de.terrocraft.smesh.Smash;
 import org.bukkit.ChatColor;
@@ -6,14 +6,14 @@ import org.bukkit.ChatColor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChatManager {
+public class ChatService {
 
     public String prefix = format(Smash.config.getString("prefix"));
     public String permission = format(prefix + hex("#df3f2dDu hast keine rechte um dies zu tuhen!"));
-    public String noplayer = format(prefix + hex("#df3f2dYou must be a player to use this command!"));
-    private Smash smash;
+    public String noPlayer = format(prefix + hex("#df3f2dYou must be a player to use this command!"));
+    private final Smash smash;
 
-    public ChatManager(Smash main) {
+    public ChatService(Smash main) {
         this.smash = main;
     }
 

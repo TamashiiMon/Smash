@@ -1,4 +1,4 @@
-package de.terrocraft.smesh.Utils;
+package de.terrocraft.smesh.utils.config;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class SConfig extends YamlConfiguration {
-    private File file;
-    private String name;
+    private final File file;
+    private final String name;
 
     public SConfig(File file, String name) {
         super();

@@ -1,11 +1,14 @@
-package de.terrocraft.smesh.managers;
+package de.terrocraft.smesh.services;
 
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
-import de.terrocraft.smesh.Utils.CoinManager;
 import de.terrocraft.smesh.countdowns.PreGameTimer;
+import de.terrocraft.smesh.enums.Gamestates;
 import de.terrocraft.smesh.listeners.DamageListener;
-import org.bukkit.*;
+import de.terrocraft.smesh.utils.CoinManager;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,14 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class MachMakeManager {
-    public static HashMap<Player, Integer> PlayerDeaths = new HashMap<>();
+public class MachMakeService {
+    public static HashMap<Player, Integer> playerDeaths = new HashMap<>();
 
-    public static int Lives = 3;
+    public static int lives = 3;
 
-    public static List<Player> PlayersInRound = new ArrayList<>();
+    public static List<Player> playersInRound = new ArrayList<>();
 
-    public static List<Player> BypassPlayers = new ArrayList<>();
+    public static List<Player> bypassPlayers = new ArrayList<>();
 
     public static void EndGameEvent(Player player) {
         try {
@@ -28,7 +31,7 @@ public class MachMakeManager {
                 Bukkit.getLogger().warning("EndGameEvent: Player or player's world is null.");
                 return;
             }
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            if (MachMakeService.bypassPlayers.contains(player)) return;
 
             Smash.getInstance().setGamestate(Gamestates.LOBBY);
 
@@ -42,12 +45,12 @@ public class MachMakeManager {
             player.setFoodLevel(20);
 
             DamageListener.KnockbackPercentage.remove(player);
-            if (PlayerDeaths.containsKey(player)) PlayersInRound.remove(player);
+            if (playerDeaths.containsKey(player)) playersInRound.remove(player);
 
-            PlayerDeaths.remove(player);
+            playerDeaths.remove(player);
 
-            PlayerManager playerManager = new PlayerManager(Smash.getInstance());
-            playerManager.handle(player);
+            PlayerService playerService = new PlayerService(Smash.getInstance());
+            playerService.handle(player);
 
             Smash.getInstance().spectating.remove(player);
             Smash.getInstance().vanished.remove(player);
@@ -61,25 +64,25 @@ public class MachMakeManager {
 
     public static void GameStartEvent(Player player) {
 
-        Location loc = new Location(Bukkit.getWorld(WorldManager.smashWorldName), 0, 85, 0);
+        Location loc = new Location(Bukkit.getWorld(WorldService.smashWorldName), 0, 85, 0);
 
-        if (MachMakeManager.BypassPlayers.contains(player)) return;
+        if (MachMakeService.bypassPlayers.contains(player)) return;
 
-        PlayerManager.teleportToRandomBlock(player, loc, 25);
+        PlayerService.teleportToRandomBlock(player, loc, 25);
 
         player.setGameMode(GameMode.ADVENTURE);
-        player.setMaxHealth(MachMakeManager.Lives * 2);
-        player.setHealth(MachMakeManager.Lives * 2);
+        player.setMaxHealth(MachMakeService.lives * 2);
+        player.setHealth(MachMakeService.lives * 2);
         player.setFoodLevel(6);
         player.setAllowFlight(true);
-        MachMakeManager.PlayerDeaths.put(player, 0);
-        PlayersInRound.add(player);
+        MachMakeService.playerDeaths.put(player, 0);
+        playersInRound.add(player);
     }
 
     public static void PlayerDeathEvent(Player player) {
         try {
 
-            if (MachMakeManager.BypassPlayers.contains(player)) return;
+            if (MachMakeService.bypassPlayers.contains(player)) return;
 
             player.setMaxHealth(20);
             player.setHealth(20);
@@ -90,24 +93,18 @@ public class MachMakeManager {
 
             player.setGameMode(GameMode.SPECTATOR);
 
-            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + ChatManager.hex("#e06153" + player.getName() + " #df3f2dis dead."));
+            Bukkit.broadcastMessage(new ChatService(Smash.getInstance()).prefix + ChatService.hex("#e06153" + player.getName() + " #df3f2dis dead."));
 
-            if (PlayerDeaths.containsKey(player)) {
-                PlayerDeaths.remove(player);
-            }
+            playerDeaths.remove(player);
 
-            if (PlayersInRound.contains(player)) {
-                PlayersInRound.remove(player);
-            }
+            playersInRound.remove(player);
 
             Smash.getInstance().spectating.add(player);
             Smash.getInstance().vanished.add(player);
 
-            if (DamageListener.KnockbackPercentage.containsKey(player)) {
-                DamageListener.KnockbackPercentage.remove(player);
-            }
+            DamageListener.KnockbackPercentage.remove(player);
 
-            World world = Bukkit.getWorld(WorldManager.smashWorldName);
+            World world = Bukkit.getWorld(WorldService.smashWorldName);
             if (world != null) {
                 Location loc = new Location(world, 0, 0, 0);
                 player.teleport(loc);
@@ -122,8 +119,8 @@ public class MachMakeManager {
 
 
     public static void MachMakeUpdateEvent() {
-        if (PlayersInRound.size() == 1) {
-            Player winner = PlayersInRound.get(0);
+        if (playersInRound.size() == 1) {
+            Player winner = playersInRound.get(0);
 
             Smash.getInstance().setGamestate(Gamestates.ENDGAME);
 
@@ -134,14 +131,14 @@ public class MachMakeManager {
             CoinManager.addWins(winner.getUniqueId(), 1);
             CoinManager.addCoins(winner.getUniqueId(), 5);
 
-            Bukkit.broadcastMessage(new ChatManager(Smash.getInstance()).prefix + ChatManager.hex("#df3f2Der Spieler #e06153" + winner.getName() + " #df3f2hat gewonnen!"));
+            Bukkit.broadcastMessage(new ChatService(Smash.getInstance()).prefix + ChatService.hex("#df3f2Der Spieler #e06153" + winner.getName() + " #df3f2hat gewonnen!"));
         }
 
     }
 
-    private static boolean AutostartEnabled = Smash.config.getBoolean("AutoGameStart");
-    private static int minplayersforautostart = Smash.config.getInt("AutoGameStartMinPlayers");
-    private static WorldManager worldManager = new WorldManager(Smash.getInstance().getDataFolder());
+    private static final boolean AutostartEnabled = Smash.config.getBoolean("AutoGameStart");
+    private static final int minplayersforautostart = Smash.config.getInt("AutoGameStartMinPlayers");
+    private static final WorldService worldService = new WorldService(Smash.getInstance().getDataFolder());
 
     public static void triggerautostartcheck() {
         // Prüfen, ob der Autostart aktiviert ist
@@ -156,7 +153,7 @@ public class MachMakeManager {
         }
 
         // Kartenliste abrufen
-        List<String> mapNames = worldManager.getMapNames();
+        List<String> mapNames = worldService.getMapNames();
         if (mapNames.isEmpty()) {
             return;
         }
@@ -164,7 +161,7 @@ public class MachMakeManager {
         Random rand = new Random();
         String randomMapName = mapNames.get(rand.nextInt(mapNames.size()));
 
-        if (!worldManager.doesMapExist(randomMapName)) {
+        if (!worldService.doesMapExist(randomMapName)) {
             System.out.println("Karte existiert nicht: " + randomMapName);
             return;
         }

@@ -1,8 +1,8 @@
 package de.terrocraft.smesh.listeners;
 
-import de.terrocraft.smesh.Gamestates;
 import de.terrocraft.smesh.Smash;
-import de.terrocraft.smesh.managers.MachMakeManager;
+import de.terrocraft.smesh.enums.Gamestates;
+import de.terrocraft.smesh.services.MachMakeService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +30,7 @@ public class DamageListener implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
-        if (MachMakeManager.BypassPlayers.contains(player)) return;
+        if (MachMakeService.bypassPlayers.contains(player)) return;
 
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL ||
                 event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION ||
@@ -64,7 +64,7 @@ public class DamageListener implements Listener {
             return;
         }
         Player victim = (Player) event.getEntity();
-        if (MachMakeManager.BypassPlayers.contains(victim)) return;
+        if (MachMakeService.bypassPlayers.contains(victim)) return;
 
         Player attacker = null;
         if (event.getDamager() instanceof Player) {

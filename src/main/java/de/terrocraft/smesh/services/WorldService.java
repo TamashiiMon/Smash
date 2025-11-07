@@ -1,4 +1,4 @@
-package de.terrocraft.smesh.managers;
+package de.terrocraft.smesh.services;
 
 import de.terrocraft.smesh.Smash;
 import org.bukkit.*;
@@ -15,26 +15,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class WorldManager {
+public class WorldService {
     public static final String smashWorldName = "Smash-world";
-    public static List<Player> playersineditmode = new CopyOnWriteArrayList<>();
-    public static boolean iseditmodeactive = false;
-    public static String mapnameofworldineditmode = null;
+    public static List<Player> playersInEditMode = new CopyOnWriteArrayList<>();
+    public static boolean isEditModeActive = false;
+    public static String worldNameInEditMode = null;
     private final File worldsFolder;
     private final File serverWorldFolder;
 
-    public WorldManager(File pluginFolder) {
+    public WorldService(File pluginFolder) {
         this.worldsFolder = new File(pluginFolder, "worlds");
         this.serverWorldFolder = Bukkit.getWorldContainer();
     }
 
     public void editmapmode(Player player, String mapName) {
         if (!player.hasPermission("smesh.editmapmode")) {
-            player.sendMessage(new ChatManager(Smash.getInstance()).permission);
+            player.sendMessage(new ChatService(Smash.getInstance()).permission);
             return;
         }
-        if (playersineditmode.contains(player)) {
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "Du bist bereits im Edit Mode.");
+        if (playersInEditMode.contains(player)) {
+            player.sendMessage(new ChatService(Smash.getInstance()).prefix + "Du bist bereits im Edit Mode.");
             return;
         }
         if (!doesMapExist(mapName)) {
@@ -63,9 +63,9 @@ public class WorldManager {
                 player.setGameMode(GameMode.CREATIVE);
                 player.teleport(spawnLocation);
 
-                playersineditmode.add(player);
-                iseditmodeactive = true;
-                mapnameofworldineditmode = mapName;
+                playersInEditMode.add(player);
+                isEditModeActive = true;
+                worldNameInEditMode = mapName;
                 player.sendMessage(ChatColor.GREEN + "You have been teleported to the map '" + mapName + "'.");
             }
         }.runTaskLater(Smash.getInstance(), 100L); // 100L = 5 Sekunden
@@ -73,19 +73,19 @@ public class WorldManager {
 
     public void saveMap(Player player) {
         if (!player.hasPermission("smesh.editmapmode")) {
-            player.sendMessage(new ChatManager(Smash.getInstance()).permission);
+            player.sendMessage(new ChatService(Smash.getInstance()).permission);
             return;
         }
-        if (!playersineditmode.contains(player)) {
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "Du bist nicht der Spieler im Edit Mode.");
+        if (!playersInEditMode.contains(player)) {
+            player.sendMessage(new ChatService(Smash.getInstance()).prefix + "Du bist nicht der Spieler im Edit Mode.");
             return;
         }
-        if (!doesMapExist(mapnameofworldineditmode)) {
-            player.sendMessage(ChatColor.RED + "World '" + mapnameofworldineditmode + "' does not exist! ERROR");
+        if (!doesMapExist(worldNameInEditMode)) {
+            player.sendMessage(ChatColor.RED + "World '" + worldNameInEditMode + "' does not exist! ERROR");
             return;
         }
 
-        File targetWorldFolder = new File(worldsFolder, mapnameofworldineditmode);
+        File targetWorldFolder = new File(worldsFolder, worldNameInEditMode);
         File sourceWorldFolder = new File(serverWorldFolder, smashWorldName);
 
         try {
@@ -101,9 +101,9 @@ public class WorldManager {
         player.setAllowFlight(false);
 
         deleteWorld();
-        iseditmodeactive = false;
-        mapnameofworldineditmode = null;
-        playersineditmode.remove(player);
+        isEditModeActive = false;
+        worldNameInEditMode = null;
+        playersInEditMode.remove(player);
         player.sendMessage(ChatColor.GREEN + "Die Welt wurde erfolgreich gespeichert.");
     }
 
@@ -154,8 +154,8 @@ public class WorldManager {
 
     public boolean isuidExist(String mapName) {
         File mapFolder = new File(worldsFolder, mapName);
-        File uid = new File(mapFolder, "uid.dat" );
-        return  uid.isFile() && uid.exists();
+        File uid = new File(mapFolder, "uid.dat");
+        return uid.isFile() && uid.exists();
     }
 
     public List<String> getMapNames() {
@@ -196,7 +196,7 @@ public class WorldManager {
 
     public boolean deleteuid(String mapName) {
         File mapFolder = new File(worldsFolder, mapName);
-        File uid = new File(mapFolder, "uid.dat" );
+        File uid = new File(mapFolder, "uid.dat");
 
         try {
             deleteFolder(uid);
@@ -221,7 +221,7 @@ public class WorldManager {
                     Files.copy(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Fehler beim Kopieren der Datei: " + path.toString(), e);
+                throw new RuntimeException("Fehler beim Kopieren der Datei: " + path, e);
             }
         });
     }
@@ -235,7 +235,7 @@ public class WorldManager {
                     try {
                         Files.delete(path);
                     } catch (IOException e) {
-                        Bukkit.getLogger().severe("Fehler beim Löschen der Datei: " + path.toString());
+                        Bukkit.getLogger().severe("Fehler beim Löschen der Datei: " + path);
                         throw new RuntimeException(e);
                     }
                 });

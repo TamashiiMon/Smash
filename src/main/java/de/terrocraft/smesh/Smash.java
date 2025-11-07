@@ -1,12 +1,13 @@
 package de.terrocraft.smesh;
 
-import de.terrocraft.smesh.Utils.ConfigUtil;
-import de.terrocraft.smesh.Utils.PlayerActionBar;
-import de.terrocraft.smesh.Utils.SConfig;
 import de.terrocraft.smesh.commands.*;
+import de.terrocraft.smesh.enums.Gamestates;
 import de.terrocraft.smesh.listeners.*;
-import de.terrocraft.smesh.managers.MachMakeManager;
-import de.terrocraft.smesh.managers.WorldManager;
+import de.terrocraft.smesh.services.MachMakeService;
+import de.terrocraft.smesh.services.WorldService;
+import de.terrocraft.smesh.utils.PlayerActionBar;
+import de.terrocraft.smesh.utils.config.ConfigUtil;
+import de.terrocraft.smesh.utils.config.SConfig;
 import fr.mrmicky.fastboard.FastBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,26 +26,21 @@ public final class Smash extends JavaPlugin {
     public ArrayList<Player> vanished = new ArrayList<>();
     private Gamestates gamestates;
 
-    public static Smash getInstance() {
-        return instance;
-    }
-
-    public Gamestates getGamestate() {
-        return gamestates;
-    }
-
-
-
     @Override
     public void onEnable() {
         instance = this;
 
-        config = ConfigUtil.getConfig("config");
+        config = ConfigUtil.getConfig("config", this);
 
         if (!config.getFile().isFile() && !config.getFile().exists()) {
             config.setDefault("prefix", "\uE000 ");
-            config.setDefault("AutoGameStart", true);
-            config.setDefault("AutoGameStartMinPlayers", 4);
+            config.setDefault("game.AutoGameStart", true);
+            config.setDefault("game.MinPlayers", 4);
+            config.setDefault("database.address", "localhost");
+            config.setDefault("database.port", 3306);
+            config.setDefault("database.database", "smash");
+            config.setDefault("database.username", "root");
+            config.setDefault("database.password", "smash123!");
             config.save();
         }
 
@@ -67,17 +63,17 @@ public final class Smash extends JavaPlugin {
         this.gamestates = gamestate;
         if (gamestates == Gamestates.ENDGAME) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                MachMakeManager.EndGameEvent(onlinePlayer);
+                MachMakeService.EndGameEvent(onlinePlayer);
             }
-            WorldManager worldManager = new WorldManager(getDataFolder());
-            worldManager.deleteWorld();
+            WorldService worldService = new WorldService(getDataFolder());
+            worldService.deleteWorld();
         }
     }
 
     @Override
     public void onDisable() {
-        WorldManager worldManager = new WorldManager(getDataFolder());
-        worldManager.deleteWorld();
+        WorldService worldService = new WorldService(getDataFolder());
+        worldService.deleteWorld();
 
     }
 
@@ -98,5 +94,11 @@ public final class Smash extends JavaPlugin {
         pm.registerEvents(new MovementListener(), this);
     }
 
+    public static Smash getInstance() {
+        return instance;
+    }
 
+    public Gamestates getGamestate() {
+        return gamestates;
+    }
 }

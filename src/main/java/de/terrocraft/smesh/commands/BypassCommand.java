@@ -1,8 +1,8 @@
 package de.terrocraft.smesh.commands;
 
 import de.terrocraft.smesh.Smash;
-import de.terrocraft.smesh.managers.ChatManager;
-import de.terrocraft.smesh.managers.MachMakeManager;
+import de.terrocraft.smesh.services.ChatService;
+import de.terrocraft.smesh.services.MachMakeService;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,28 +13,28 @@ public class BypassCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] strings) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(new ChatManager(Smash.getInstance()).noplayer);
+            sender.sendMessage(new ChatService(Smash.getInstance()).noPlayer);
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("smash.bypass")) {
-            player.sendMessage(new ChatManager(Smash.getInstance()).permission);
+            player.sendMessage(new ChatService(Smash.getInstance()).permission);
             return true;
         }
 
-        if (MachMakeManager.BypassPlayers.contains(player)) {
-            MachMakeManager.BypassPlayers.remove(player);
+        if (MachMakeService.bypassPlayers.contains(player)) {
+            MachMakeService.bypassPlayers.remove(player);
             player.setGameMode(GameMode.SURVIVAL);
             player.setAllowFlight(true);
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "#df3f2dDu bist nun aus den Bypass modus.");
+            player.sendMessage(new ChatService(Smash.getInstance()).prefix + "#df3f2dDu bist nun aus den Bypass modus.");
         } else {
-            MachMakeManager.BypassPlayers.add(player);
+            MachMakeService.bypassPlayers.add(player);
             player.setGameMode(GameMode.CREATIVE);
             player.setAllowFlight(true);
-            player.sendMessage(new ChatManager(Smash.getInstance()).prefix + "#df3f2dDu bist nun im Bypass modus.");
-            MachMakeManager.EndGameEvent(player);
+            player.sendMessage(new ChatService(Smash.getInstance()).prefix + "#df3f2dDu bist nun im Bypass modus.");
+            MachMakeService.EndGameEvent(player);
         }
 
         return false;

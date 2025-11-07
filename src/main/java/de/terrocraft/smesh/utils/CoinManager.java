@@ -1,16 +1,22 @@
-package de.terrocraft.smesh.Utils;
+package de.terrocraft.smesh.utils;
+
+import de.terrocraft.smesh.Smash;
 
 import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class CoinManager {
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/smash";
-    private static final String USER = "smash";
-    private static final String PASSWORD = "Smash123!";
+    private static final String user = Smash.config.getString("database.username");
+    private static final String password = Smash.config.getString("database.password");
+    private static final String address = "player_data";
+    private static final int port = 3306;
+    private static final String database = Smash.config.getString("database.database");
+
+    private static final String URL = "jdbc:mysql://" + address + ":" + port + "/" + database;
 
     private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return DriverManager.getConnection(URL, user, password);
     }
 
     public static CompletableFuture<Void> savePlayerData(UUID uuid, int coins, int wins) {

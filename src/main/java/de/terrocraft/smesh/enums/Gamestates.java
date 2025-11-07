@@ -1,4 +1,4 @@
-package de.terrocraft.smesh;
+package de.terrocraft.smesh.enums;
 
 public enum Gamestates {
     LOBBY,
